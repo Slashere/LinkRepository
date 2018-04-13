@@ -59,6 +59,11 @@ class User extends Authenticatable implements JWTSubject
         return false;
     }
 
+    public function verify()
+    {
+        
+    }
+
     public function isWait(): bool
     {
         return $this->status === 0;

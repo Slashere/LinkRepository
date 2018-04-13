@@ -2,7 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\LinkRequest;
+use App\Http\Requests\Link\CreateLink;
+use App\Http\Requests\Link\EditLink;
 use Illuminate\Http\Request;
 use App\Entity\Link;
 use Illuminate\Support\Facades\Auth;
@@ -53,7 +54,7 @@ class LinkController extends Controller
         return view('links.create');
     }
 
-    public function store(LinkRequest $request)
+    public function store(CreateLink $request)
     {
         $data = $request->all();
         $path = public_path() . '/images';
@@ -79,10 +80,10 @@ class LinkController extends Controller
         return view('links.edit', compact('link'));
     }
 
-    public function update(Link $link, LinkRequest $request)
+    public function update(Link $link, EditLink $request)
     {
-        $data = $request->all();
 
+        $data = $request->all();
         $path = public_path() . '/images/';
         if ($request->hasFile('image')) {
             if (File::exists($path . $link->image)) { // unlink or remove previous image from folder

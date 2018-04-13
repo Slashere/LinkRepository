@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\User;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UserRequest extends FormRequest
+class EditUser extends FormRequest
 {
 
     /**
@@ -25,9 +25,9 @@ class UserRequest extends FormRequest
     public function rules()
     {
         return [
-            'login' => 'required|string|max:255|min:3',
-            'name' => 'required|string|max:255|min:2',
-            'surname' => 'required|string|max:255|min:2',
+            'login' => 'string|max:255|min:3',
+            'name' => 'string|max:255|min:2',
+            'last_name' => 'string|max:255|min:2',
         ];
     }
 

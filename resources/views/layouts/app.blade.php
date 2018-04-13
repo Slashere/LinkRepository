@@ -47,24 +47,24 @@
                     <!-- Right Side Of Navbar -->
                     <ul class="nav navbar-nav navbar-right">
                         <!-- Authentication Links -->
-                        <li><a href="{{ route('gallery') }}">Gallery</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ route('gallery') }}">Gallery</a></li>
                         @guest
-                            <li><a href="{{ route('login') }}">Login</a></li>
-                            <li><a href="{{ route('register') }}">Register</a></li>
+                            <li class="nav-item"><a class="nav-link" href="{{ route('login') }}">Login</a></li>
+                            <li class="nav-item"><a class="nav-link" href="{{ route('register') }}">Register</a></li>
                         @else
-                            <li>
-                                <a href="{{ route('list_links') }}">My links</a>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ route('list_links') }}">My links</a>
                             </li>
-                            <li>
-                                <a href="{{ route('show_user', Auth::user()->id) }}">My account</a>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ route('show_user', Auth::user()->id) }}">My account</a>
                             </li>
                             @if(Auth::user()->isAdmin())
-                                <li>
-                                    <a href="{{ route('admin_panel') }}">Admin panel</a>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ route('admin_panel') }}">Admin panel</a>
                                 </li>
                             @endif
-                            <li>
-                                <a href="{{ route('logout') }}"
+                            <li >
+                                <a class="nav-link" href="{{ route('logout') }}"
                                    onclick="event.preventDefault();
                                                      document.getElementById('logout-form').submit();">
                                     Logout

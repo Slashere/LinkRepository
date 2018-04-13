@@ -24,6 +24,14 @@ class Handler extends ExceptionHandler
 
     public function render($request, Exception $exception)
     {
+        // 403 Forbidden
+        if ($exception instanceof \Throwable)
+        {
+            return response()->json([
+                'code' => 403,
+                'message' => 'This action is unauthorized.',
+            ],403);
+        }
         if ($exception instanceof \DomainException && $request->expectsJson()) {
             return response()->json([
                 'message' => $exception->getMessage(),

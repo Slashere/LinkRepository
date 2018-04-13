@@ -8,13 +8,12 @@
 
 namespace App\UseCases;
 
-use App\User;
-use App\Link;
+use App\Entity\User;
+use App\Entity\Link;
 use Illuminate\Http\Request;
 use Gate;
 use Validator;
-use App\Http\Resources\Link as LinkResource;
-
+use App\Http\Requests\Link\EditLink;
 
 class LinkService
 {
@@ -27,7 +26,7 @@ class LinkService
 //        }
     }
 
-    public function update(Link $link, Request $request)
+    public function update(Link $link, EditLink $request)
     {
         $validator = Validator::make($request->all(), [
             'login' => 'string|max:255|min:3',

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Entity\Role;
+use App\Http\Requests\User\EditUser;
 use Illuminate\Http\Request;
 use App\Http\Requests\UserRequest;
 use App\Entity\User;
@@ -60,7 +61,7 @@ class UserController extends Controller
         return view('admin.index', compact('users'));
     }
 
-    public function update(User $user, UserRequest $request)
+    public function update(User $user, EditUser $request)
     {
         $this->userservice->update($user, $request);
         return redirect()->route('show_user', $user)->with('success', 'User was updated');
@@ -68,7 +69,7 @@ class UserController extends Controller
 
     public function destroy(User $user)
     {
-        $user->delete();
+        $this->userservice->delete($user);
         return redirect()->route('admin_panel')->with('delete', 'User was deleted');
     }
 

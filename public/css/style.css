@@ -1,3 +1,9 @@
 .btn-space {
     margin-left: 10px;
 }
+.navbar {
+    background-color: #9fcdff;
+}
+.help-block strong {
+    color: red;
+}

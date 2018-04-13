@@ -60,10 +60,8 @@
                                 <label for="private" class="col-md-4 control-label">Private</label>
 
                                 <div class="col-md-6">
-
-                            {{ Form::hidden('private', 0) }}
-                            {{ Form::checkbox('private', 1, old('private', $link->private)? 'checked' : '') }}
-
+                                    <input name="private" type="hidden" value="0">
+                                    <input {{old('private', $link->private)? 'checked' : ''}} name="private" type="checkbox" value="1">
                                 </div>
                             </div>
 
@@ -74,7 +72,7 @@
                             @if ($link->image != NULL)
                                 <img src='{{'/images/'. $link->image }}'  height="200" width="300" style="background-size: cover;"/>
                             @endif
-                            {{ Form::file('image') }}
+                             <input name="image" type="file">
                             @if ($errors->has('image'))
                                 <span class="help-block">
                                         <strong>{{ $errors->first('image') }}</strong>

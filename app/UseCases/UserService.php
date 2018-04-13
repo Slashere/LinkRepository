@@ -8,83 +8,58 @@
 
 namespace App\UseCases;
 
-use App\User;
-use Illuminate\Http\Request;
+use Illuminate\Http\Exceptions\HttpResponseException;
+use App\Entity\User;
+use App\Http\Requests\User\CreateUser;
+use App\Http\Requests\User\EditUser;
 use Gate;
+use Response;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Validator;
-use App\Http\Resources\User as UserResource;
 
 
 class UserService
 {
-    private function updateUserBasicValues(User $user, Request $request)
+    private function updateUserBasicValues(User $user, EditUser $request)
     {
         $user->login = $request->input('login') ?? $user->login;
         $user->name = $request->input('name') ?? $user->name;
-        $user->surname = $request->input('surname') ?? $user->surname;
+        $user->last_name = $request->input('last_name') ?? $user->last_name;
     }
 
-    private function updateUserStatusAndRole(User $user, Request $request)
+    private function updateUserStatusAndRole(User $user, EditUser $request)
     {
         $user->verified = $request->input('verified') ?? $user->verified;
         $user->role_id = $request->input('role') ?? $user->role_id;
     }
 
-    public function update(User $user, Request $request)
+    public function update(User $user, EditUser $request)
     {
-        $validator = Validator::make($request->all(), [
-        'login' => 'string|max:255|min:3',
-        'name' => 'string|max:255|min:2',
-        'surname' => 'string|max:255|min:2',
-    ]);
-
-        if ($validator->fails()) {
-            return $validator->errors();
-        }
-
         $this->updateUserBasicValues($user, $request);
 
         if (Gate::allows('update-user-status-and-role')) {
             $this->updateUserStatusAndRole($user, $request);
         }
 
-        if($user->update()) {
-            return new UserResource($user);
-        }
+       if( $user->update()) {
+           return $user;
+       }
     }
 
-    public function create(Request $request)
+    public function create(CreateUser $request)
     {
-        $validator = Validator::make($request->all(), [
-            'login' => 'required|string|max:255|unique:users',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:6',
-            'name' => 'required|string|max:255',
-            'surname' => 'required|string|max:255',
-    ]);
-
-        if ($validator->fails()) {
-            return $validator->errors();
-        }
-
         $user = User::create([
             'login' => $request['login'],
             'name' => $request['name'],
-            'surname' => $request['surname'],
+            'last_name' => $request['last_name'],
             'email' => $request['email'],
             'password' => bcrypt($request['password']),
-            'verified' => 1,
         ]);
-
-        if($user->save()) {
-            return new UserResource($user);
-        }
+        return $user;
     }
 
-    public function destroy(User $user)
+    public function delete(User $user)
     {
-        $user = User::findOrFail($user->id);
         $user->delete();
     }
-
 }
