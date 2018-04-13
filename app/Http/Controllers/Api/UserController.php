@@ -19,30 +19,25 @@ class UserController extends Controller
 
     public function show(User $user)
     {
-        if (Gate::allows('update-user-status-and-role')) {
-            return $user;
-        }
-        if (Auth::guard('api')->user()) {
-            if (Auth::guard('api')->user()->id == $user->id) {
-                return $user;
-            } elseif (Auth::guard('api')->user()->isAdmin()){
-                return $user->only(['id','name','surname','role_id']);
-            }
-        }
-        return $user->only(['id','name','surname','role_id']);
+        $user = $this->userservice->show($user);
+        return response()->json(['response' => 'success', 'show' => $user]);
+
     }
     public function store(CreateUser $request)
     {
-        $user = $this->userservice->create($request);
-        $user->status = 1;
-        $user->save();
+        $createdUser = $this->userservice->create($request);
+        $createdUser->status = 1;
+        $createdUser->save();
+        return response()->json(['response' => 'success', 'created' => $createdUser]);
     }
     public function update(User $user, EditUser $request)
     {
-        return $this->userservice->update($user, $request);
+        $updatedUser = $this->userservice->update($user, $request);
+        return response()->json(['response' => 'success', 'updated' => $updatedUser]);
     }
     public function destroy(User $user)
     {
         $this->userservice->delete($user);
+        return response()->json(['response' => 'success', 'deleted' => $user]);
     }
 }

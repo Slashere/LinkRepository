@@ -32,6 +32,8 @@ class UserController extends Controller
      */
     public function show(User $user)
     {
+        $user = $this->userservice->show($user);
+
         if (Auth::check()) {
             if (Auth::user()->id == $user->id) {
                 $links = Link::where('user_id', '=', Auth::user()->id)->paginate(3);
@@ -57,7 +59,7 @@ class UserController extends Controller
 
     public function admin()
     {
-        $users = User::paginate(3);
+        $users = User::paginate(5);
         return view('admin.index', compact('users'));
     }
 

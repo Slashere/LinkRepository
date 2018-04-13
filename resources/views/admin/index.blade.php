@@ -21,21 +21,19 @@
                                     profile</a>
                             @endcan
                             @can('delete-user')
-                            <!-- Delete should be a button -->
-                                {!! Form::open([
-                                        'method' => 'DELETE',
-                                        'route' => ['delete_user', $user->id],
-                                        'onsubmit' => "return confirm('Are you sure you want to delete?')",
-                                    ]) !!}
-                                {!! Form::submit('Delete',['class' => 'btn btn-small btn-danger']) !!}
-                                {!! Form::close() !!}
-                            <!-- End Delete button -->
+                                <form action="{{ route('delete_link',$user->id) }}" method="POST">
+                                    @csrf
+                                    @method('DELETE')
+
+                                    <button type="submit" class="btn btn-danger btn-space">Delete</button>
+
+                                </form>
                             @endcan
                         </div>
 
                     </div>
                 @endforeach
-
+                {{ $users->links() }}
             </div>
 
         </div>

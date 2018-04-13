@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Validator;
+use App\Http\Requests\User\CreateUser;
 
 class RegisterController extends Controller
 {
@@ -24,37 +25,16 @@ class RegisterController extends Controller
         $this->middleware('guest');
     }
 
-    protected function validator(array $data)
+    protected function register(CreateUser $request)
     {
-        return Validator::make($data, [
-            'login' => 'required|string|max:255|unique:users',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:6|confirmed',
-            'name' => 'required|string|max:255',
-            'last_name' => 'required|string|max:255',
-        ]);
-    }
+        $user = User::register($request);
 
-    protected function create(array $data)
-    {
-        $user = User::create([
-            'login' => $data['login'],
-            'name' => $data['name'],
-            'last_name' => $data['last_name'],
-            'email' => $data['email'],
-            'password' => bcrypt($data['password']),
-
-        ]);
-
-        $verifyUser = VerifyUser::create([
-            'user_id' => $user->id,
-            'token' => str_random(40),
-            'expired_date' => Carbon::now()->addHours(Config::get('constants.options'))
-        ]);
+        VerifyUser::createVerify($user->id);
 
         VerifyMail::sendAuthCode($user);
 
-        return $user;
+        return redirect()->route('login')
+            ->with('message', 'Check your email and click on the link to verify.');
     }
 
     public function verifyUser($token)

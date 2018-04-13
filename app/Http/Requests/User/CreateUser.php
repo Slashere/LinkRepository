@@ -30,6 +30,7 @@ class CreateUser extends FormRequest
             'last_name' => 'required|string|max:255|min:2',
             'email' => 'required|email|max:255|unique:users',
             'password' => 'required|min:6|confirmed',
+            'password_confirmation' => 'required|min:6',
         ];
     }
 

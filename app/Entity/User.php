@@ -2,10 +2,14 @@
 
 namespace App\Entity;
 
+use Carbon\Carbon;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use App\Notifications\ResetPassword;
+use Illuminate\Support\Facades\Config;
 use Tymon\JWTAuth\Contracts\JWTSubject;
+use App\Http\Requests\User\CreateUser;
+use App\Http\Requests\User\EditUser;
 
 class User extends Authenticatable implements JWTSubject
 {
@@ -14,11 +18,11 @@ class User extends Authenticatable implements JWTSubject
     protected $table = 'users';
 
     protected $fillable = [
-        'login', 'name', 'last_name', 'email', 'password', 'status', 'role_id',
+        'login', 'name', 'last_name', 'email', 'password', 'role_id',
     ];
 
     protected $hidden = [
-        'password', 'remember_token',
+        'password', 'remember_token', 'status', 'updated_at' , 'created_at',
     ];
 
 
@@ -59,20 +63,30 @@ class User extends Authenticatable implements JWTSubject
         return false;
     }
 
-    public function verify()
+    public static function register(CreateUser $request): self
     {
-        
+        return self::create([
+            'login' => $request['login'],
+            'name' => $request['name'],
+            'last_name' => $request['last_name'],
+            'email' => $request['email'],
+            'password' => bcrypt($request['password']),
+        ]);
     }
 
-    public function isWait(): bool
+    public function updateUserBasicValues(User $user, EditUser $request)
     {
-        return $this->status === 0;
+        $user->login = $request->input('login') ?? $user->login;
+        $user->name = $request->input('name') ?? $user->name;
+        $user->last_name = $request->input('last_name') ?? $user->last_name;
     }
 
-    public function isActive(): bool
+    public function updateUserStatusAndRole(User $user, EditUser $request)
     {
-        return $this->status === 1;
+        $user->verified = $request->input('verified') ?? $user->verified;
+        $user->role_id = $request->input('role') ?? $user->role_id;
     }
+
 
     public function getJWTCustomClaims(): array {
         return [];

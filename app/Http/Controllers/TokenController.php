@@ -61,7 +61,7 @@ class TokenController extends Controller
         $token = JWTAuth::getToken();
         try {
             $token = JWTAuth::invalidate($token);
-            return response()->json(['token' => $token]);
+            return response()->json(['response' => 'success','msg' => 'Your token deleted']);
         } catch (TokenExpiredException $e) {
             throw new HttpResponseException(
                 Response::json(['msg' => "Your token Expired. Need to refresh Token or login again"])
