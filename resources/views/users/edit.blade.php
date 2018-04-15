@@ -77,9 +77,8 @@
                                 </div>
 
                             <label for="description" class="col-md-4 control-label">Verified</label>
-
-                            {{ Form::hidden('verified', 0) }}
-                            {{ Form::checkbox('verified', 1, old('verified', $user->verified)? 'checked' : '') }}
+                                <input name="status" type="hidden" value="0">
+                                <input checked="{{old('status', $user->verified)? 'checked' : ''}}" name="status" type="checkbox" value="1" >
                             @endcan
                             <div class="form-group">
                                 <div class="col-md-6 col-md-offset-4">

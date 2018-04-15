@@ -101,7 +101,7 @@ class LinkController extends Controller
 
     public function destroy(Link $link)
     {
-        $this->linkservice->destroy($link);
-        return redirect()->route('main')->with('delete', 'Link was deleted');
+        $this->linkservice->delete($link);
+        return redirect()->back()->with('delete', 'Link was deleted');
     }
 }

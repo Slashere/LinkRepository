@@ -15,7 +15,7 @@
                                 <label for="title" class="col-md-4 control-label">Title</label>
 
                                 <div class="col-md-6">
-                                    <input id="title" type="text" class="form-control" name="title" placeholder="Title"
+                                    <input id="title" type="text" class="form-control" name="title" placeholder="Title" value="{{ old('title') }}"
                                            required autofocus>
 
                                     @if ($errors->has('title'))
@@ -30,7 +30,7 @@
                                 <label for="link" class="col-md-4 control-label">Link</label>
 
                                 <div class="col-md-6">
-                                    <input id="link" type="text" class="form-control" name="link" placeholder="Link" required
+                                    <input id="link" type="text" class="form-control" name="link" placeholder="Link" value="{{ old('link') }}" required
                                            autofocus>
 
                                     @if ($errors->has('link'))
@@ -45,7 +45,7 @@
                                 <label for="description" class="col-md-4 control-label">Description</label>
 
                                 <div class="col-md-6">
-                                    <textarea name="description" id="description" cols="30" rows="10" placeholder="Description" class="form-control" required></textarea>
+                                    <textarea name="description" id="description" cols="30" rows="10" placeholder="Description" class="form-control" required>{{ old('description') }}</textarea>
                                     @if ($errors->has('description'))
                                         <span class="help-block">
                                         <strong>{{ $errors->first('description') }}</strong>

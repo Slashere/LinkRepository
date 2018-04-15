@@ -1,17 +1,14 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="container">
+    <div class="container mt-5">
         <div class="row">
-            @can('create-link')
-                <a class="btn btn-small btn-success" href="{{ route('create_link') }}">Create Link</a>
-            @endcan
-            <div class="col-md-8 col-md-offset-2">
+            <div class="col-md-10 mx-auto">
                 <h2>My links:</h2>
             @foreach ($links as $link)
-                    <div class="panel panel-default">
-                        <div class="panel-heading"><a
-                                    href='{{ route('show_link',$link->id) }}'>Title: {{$link->title}}</a>
+                        <div class="card rounded-0">
+                            <div class="card-header">
+                                <a href='{{ route('show_link',$link->id) }}'>Title: {{$link->title}}</a>
                         </div>
                         <div class="panel-body">
                             @if ($link->image != NULL)
@@ -42,6 +39,11 @@
 
                 @endforeach
                     {{ $links->links() }}
+            </div>
+            <div class="col-md-2">
+                @can('create-link')
+                    <a class="btn btn-small btn-success" href="{{ route('create_link') }}">Create Link</a>
+                @endcan
             </div>
         </div>
     </div>

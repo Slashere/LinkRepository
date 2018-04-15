@@ -18,14 +18,13 @@ use Auth;
 
 class UserService
 {
-
     public function show(User $user)
     {
         if (Auth::guard()->user()) {
             if (Auth::guard()->user()->id == $user->id) {
-                return $user->getHidden();
+                return $user->makeVisible(['status']);
             } elseif (Auth::guard()->user()->isAdmin()){
-                return $user->getHidden();
+                return $user->makeVisible(['status']);
             }
         }
         return $user;

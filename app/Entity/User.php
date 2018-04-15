@@ -63,6 +63,15 @@ class User extends Authenticatable implements JWTSubject
         return false;
     }
 
+    public function isEditor()
+    {
+        if ($this->role->name == 'Editor') {
+            return true;
+        }
+
+        return false;
+    }
+
     public static function register(CreateUser $request): self
     {
         return self::create([
@@ -83,7 +92,7 @@ class User extends Authenticatable implements JWTSubject
 
     public function updateUserStatusAndRole(User $user, EditUser $request)
     {
-        $user->verified = $request->input('verified') ?? $user->verified;
+        $user->status = $request->input('status') ?? $user->status;
         $user->role_id = $request->input('role') ?? $user->role_id;
     }
 

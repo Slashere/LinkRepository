@@ -33,22 +33,7 @@ class UserController extends Controller
     public function show(User $user)
     {
         $user = $this->userservice->show($user);
-
-        if (Auth::check()) {
-            if (Auth::user()->id == $user->id) {
-                $links = Link::where('user_id', '=', Auth::user()->id)->paginate(3);
-            } else {
-                $links = Link::where('private', '=', false)->where('user_id', '=', $user->id)->paginate(3);
-            }
-        } else {
-            $links = Link::where('private', '=', false)->where('user_id', '=', $user->id)->paginate(3);
-        }
-
-        if (Gate::allows('list-private-links')) {
-            $links = Link::where('user_id', '=', $user->id)->paginate(3);
-        }
-
-        return view('users.show', compact(['user', 'links']));
+        return view('users.show', compact(['user']));
     }
 
     public function edit(User $user)
@@ -59,7 +44,7 @@ class UserController extends Controller
 
     public function admin()
     {
-        $users = User::paginate(5);
+        $users = User::paginate(10);
         return view('admin.index', compact('users'));
     }
 
@@ -72,7 +57,7 @@ class UserController extends Controller
     public function destroy(User $user)
     {
         $this->userservice->delete($user);
-        return redirect()->route('admin_panel')->with('delete', 'User was deleted');
+        return redirect()->back()->with('status', 'User was deleted');
     }
 
 }

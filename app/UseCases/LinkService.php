@@ -10,6 +10,7 @@ namespace App\UseCases;
 
 use App\Entity\User;
 use App\Entity\Link;
+use App\Http\Requests\Link\CreateLink;
 use Illuminate\Http\Request;
 use Gate;
 use Validator;
@@ -17,63 +18,54 @@ use App\Http\Requests\Link\EditLink;
 
 class LinkService
 {
-    public function show(Link $link)
+
+    public function getMyLinks()
     {
-//        if (Gate::allows('show-private-link', $link) or $link->private == 0) {
-//           return $link = Link::findOrFail($link->id);
-//        } else {
-//            return response()->json('asdfsadf', 403);
-//        }
+        $links = Link::where('user_id', '=', Auth::user()->id)->paginate(3);
+        return $links;
+    }
+
+    public function getAllLinks()
+    {
+        if (Gate::allows('list-private-links')) {
+            return $links = Link::paginate(4);
+        }
+
+        if (Auth::user()) {
+            return $links = Link::where('private', '=', false)->orWhere('user_id', '=', Auth::user()->id)->paginate(4);
+        } else {
+            return $links = Link::where('private', '=', false)->paginate(4);
+        }
+    }
+
+    public function getLink(Link $link)
+    {
+        if (Auth::guard()->user()) {
+            if (Auth::guard()->user()->id == $link->user_id) {
+                return $link->makeVisible(['private']);
+            } elseif (Auth::guard()->user()->isAdmin()){
+                return $link->makeVisible(['private']);
+            }
+        }
+        return $link;
     }
 
     public function update(Link $link, EditLink $request)
     {
-        $validator = Validator::make($request->all(), [
-            'login' => 'string|max:255|min:3',
-            'name' => 'string|max:255|min:2',
-            'surname' => 'string|max:255|min:2',
-        ]);
+        $link->upgrade($link, $request);
 
-        if ($validator->fails()) {
-            return $validator->errors();
-        }
-
-        if($link->save()) {
-            return new UserResource($link);
+        if( $link->update()) {
+            return $link;
         }
     }
 
-    public function create(Request $request)
+    public function create(CreateLink $request)
     {
-        $validator = Validator::make($request->all(), [
-            'login' => 'required|string|max:255|unique:users',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:6',
-            'name' => 'required|string|max:255',
-            'surname' => 'required|string|max:255',
-        ]);
-
-        if ($validator->fails()) {
-            return $validator->errors();
-        }
-
-        $user = User::create([
-            'login' => $request['login'],
-            'name' => $request['name'],
-            'surname' => $request['surname'],
-            'email' => $request['email'],
-            'password' => bcrypt($request['password']),
-            'verified' => 1,
-        ]);
-
-        if($user->save()) {
-            return new UserResource($user);
-        }
+        return Link::build($request);
     }
 
-    public function destroy(Link $link)
+    public function delete(Link $link)
     {
-        $link = Link::findOrFail($link->id);
         $link->delete();
     }
 

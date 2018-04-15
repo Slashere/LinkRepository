@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers\Api;
 
+use App\Http\Requests\Link\CreateLink;
 use App\Http\Requests\Link\EditLink;
 use Illuminate\Http\Request;
 use App\Entity\Link;
@@ -19,28 +20,37 @@ class LinkController extends Controller
 
     public function index()
     {
+        $allLinks = $this->linkservice->getAllLinks();
+        return response()->json(['response' => 'success', 'all links' => $allLinks]);
     }
+
     public function showMyLinks()
     {
+        $allMyLinks = $this->linkservice->getMyLinks();
+        return response()->json(['response' => 'success', 'my links' => $allMyLinks]);
     }
+
     public function show(Link $link)
     {
-        if(Gate::allows('show-private-link', $link)){
-            return 1;
-        }
-        return $link;
+        $link = $this->linkservice->getLink($link);
+        return response()->json(['response' => 'success', 'created' => $link]);
+    }
 
-    }
-    public function store(Request $request)
+    public function store(CreateLink $request)
     {
-        return $this->linkservice->create($request);
+        $createdLink = $this->linkservice->create($request);
+        return response()->json(['response' => 'success', 'created' => $createdLink]);
     }
+
     public function update(Link $link, EditLink $request)
     {
-        $this->linkservice->update($link, $request);
+        $updatedLink = $this->linkservice->update($link, $request);
+        return response()->json(['response' => 'success', 'updated' => $updatedLink]);
     }
+
     public function destroy(Link $link)
     {
-        $this->linkservice->destroy($link);
+        $this->linkservice->delete($link);
+        return response()->json(['response' => 'success', 'deleted' => $link]);
     }
 }
