@@ -10,11 +10,12 @@ namespace App\UseCases;
 
 use App\Entity\User;
 use App\Entity\Link;
-use App\Http\Requests\Link\CreateLink;
+use App\Http\Requests\Link\ApiCreateLink;
 use Illuminate\Http\Request;
 use Gate;
 use Validator;
 use App\Http\Requests\Link\EditLink;
+use Auth;
 
 class LinkService
 {
@@ -40,12 +41,10 @@ class LinkService
 
     public function getLink(Link $link)
     {
-        if (Auth::guard()->user()) {
-            if (Auth::guard()->user()->id == $link->user_id) {
-                return $link->makeVisible(['private']);
-            } elseif (Auth::guard()->user()->isAdmin()){
-                return $link->makeVisible(['private']);
-            }
+        if (Gate::allows('show-private-link', $link) or $link->private == 0) {
+            $link = Link::findOrFail($link->id);
+        } else {
+            abort(403);
         }
         return $link;
     }
@@ -59,7 +58,7 @@ class LinkService
         }
     }
 
-    public function create(CreateLink $request)
+    public function create(ApiCreateLink $request)
     {
         return Link::build($request);
     }

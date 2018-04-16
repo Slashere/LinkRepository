@@ -1,14 +1,18 @@
 <?php
 namespace App\Http\Controllers\Api;
 
-use App\Http\Requests\Link\CreateLink;
+use Illuminate\Http\Exceptions\HttpResponseException;
+use App\Http\Requests\Link\ApiCreateLink;
 use App\Http\Requests\Link\EditLink;
 use Illuminate\Http\Request;
 use App\Entity\Link;
 use Gate;
 use App\UseCases\LinkService;
 use App\Http\Controllers\Controller;
+use Response;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 use Validator;
+
 
 class LinkController extends Controller
 {
@@ -32,11 +36,20 @@ class LinkController extends Controller
 
     public function show(Link $link)
     {
+        try {
         $link = $this->linkservice->getLink($link);
-        return response()->json(['response' => 'success', 'created' => $link]);
+        } catch (HttpException $e) {
+            throw new HttpResponseException(
+                Response::json([
+                'code' => 403,
+                'message' => 'This action is unauthorized.',
+            ],403)
+            );
+        }
+        return response()->json(['response' => 'success', 'show' => $link]);
     }
 
-    public function store(CreateLink $request)
+    public function store(ApiCreateLink $request)
     {
         $createdLink = $this->linkservice->create($request);
         return response()->json(['response' => 'success', 'created' => $createdLink]);

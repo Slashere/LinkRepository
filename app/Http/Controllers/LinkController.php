@@ -56,22 +56,22 @@ class LinkController extends Controller
 
     public function store(CreateLink $request)
     {
-        $data = $request->all();
-        $path = public_path() . '/images';
-
-        if ($request->hasFile('image')) {
+        $data = $request->only('link', 'title', 'description', 'private','image');
+        if( $request->hasFile('image')) {
             $image = $request->file('image');
-            $data['image'] = '(' . uniqid() . ')' . $image->getClientOriginalName();
-            $image->move($path, $data['image']);
+            $path = public_path(). '/images/';
+            $filename = time() . '.' . $image->getClientOriginalExtension();
+            $image->move($path, $filename);
+            $data['image'] = $path;
         }
         $data['user_id'] = auth()->user()->id;
-
-        $link = Link::create($data);
+        Link::create($data);
         return redirect()->route('list_links')->with('success', 'Link was created');
     }
 
     public function show(Link $link)
     {
+        $link = $this->linkservice->getLink($link);
         return view('links.show', compact('link'));
     }
 
