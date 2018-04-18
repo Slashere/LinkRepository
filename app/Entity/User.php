@@ -8,7 +8,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use App\Notifications\ResetPassword;
 use Illuminate\Support\Facades\Config;
 use Tymon\JWTAuth\Contracts\JWTSubject;
-use App\Http\Requests\User\CreateUser;
+use App\Http\Requests\User\ApiCreateUser;
 use App\Http\Requests\User\EditUser;
 
 class User extends Authenticatable implements JWTSubject
@@ -72,7 +72,7 @@ class User extends Authenticatable implements JWTSubject
         return false;
     }
 
-    public static function register(CreateUser $request): self
+    public static function register(ApiCreateUser $request): self
     {
         return self::create([
             'login' => $request['login'],

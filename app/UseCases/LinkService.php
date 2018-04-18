@@ -8,14 +8,15 @@
 
 namespace App\UseCases;
 
-use App\Entity\User;
+use Illuminate\Auth\Access\AuthorizationException;
+
 use App\Entity\Link;
 use App\Http\Requests\Link\ApiCreateLink;
-use Illuminate\Http\Request;
 use Gate;
 use Validator;
-use App\Http\Requests\Link\EditLink;
+use App\Http\Requests\Link\ApiEditLink;
 use Auth;
+use Illuminate\Support\Facades\File;
 
 class LinkService
 {
@@ -42,25 +43,63 @@ class LinkService
     public function getLink(Link $link)
     {
         if (Gate::allows('show-private-link', $link) or $link->private == 0) {
-            $link = Link::findOrFail($link->id);
+            return $link;
         } else {
             abort(403);
         }
-        return $link;
     }
 
-    public function update(Link $link, EditLink $request)
+    public function getApiLink(Link $link)
     {
-        $link->upgrade($link, $request);
 
-        if( $link->update()) {
+        if (Gate::allows('api-show-private-link', $link) or $link->private == 0) {
+            return $link;
+        } else {
+            throw new AuthorizationException();
+        }
+    }
+
+    public function update(Link $link, ApiEditLink $request)
+    {
+        $data = $request->all();
+        $path = public_path() . '/images/';
+        if ($request->has('image')) {
+            if (File::exists($path . $link->image)) { // unlink or remove previous image from folder
+                unlink($path . $link->image);
+            }
+            $explode = explode(',', $request['image']);
+            $image = $explode[1];
+            $file = base64_decode($image);
+            $safeName = str_random(10).'.'.'png';
+            file_put_contents($path .$safeName, $file);
+
+            //save new file path into db
+            $data['image'] = $safeName;
+        }
+        $data['user_id'] = auth()->user()->id;
+
+        if( $link->fill($data)->save()) {
             return $link;
         }
     }
 
     public function create(ApiCreateLink $request)
     {
-        return Link::build($request);
+        $data = $request->all();
+        $path = public_path() . '/images/';
+        if ($request->has('image')) {
+            $explode = explode(',', $request['image']);
+            $image = $explode[1];
+            $file = base64_decode($image);
+            $safeName = str_random(10) . '.' . 'png';
+            file_put_contents($path . $safeName, $file);
+
+            //save new file path into db
+            $data['image'] = $safeName;
+        }
+        $data['user_id'] = auth()->user()->id;
+
+        return Link::create($data);
     }
 
     public function delete(Link $link)

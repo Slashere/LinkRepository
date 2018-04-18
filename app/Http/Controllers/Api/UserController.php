@@ -1,14 +1,18 @@
 <?php
 namespace App\Http\Controllers\Api;
 
-use App\Http\Requests\User\CreateUser;
+use App\Http\Requests\User\ApiCreateUser;
 use App\Http\Requests\User\EditUser;
 use App\Entity\User;
 use Gate;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Exceptions\HttpResponseException;
+use Tymon\JWTAuth\Exceptions\TokenExpiredException;
 use App\UseCases\UserService;
 use App\Http\Controllers\Controller;
 use Validator;
+use JWTAuth;
+use Response;
+
 class UserController extends Controller
 {
     private $userservice;
@@ -23,7 +27,7 @@ class UserController extends Controller
         return response()->json(['response' => 'success', 'show' => $user]);
 
     }
-    public function store(CreateUser $request)
+    public function store(ApiCreateUser $request)
     {
         $createdUser = $this->userservice->create($request);
         $createdUser->status = 1;
@@ -37,7 +41,15 @@ class UserController extends Controller
     }
     public function destroy(User $user)
     {
-        $this->userservice->delete($user);
-        return response()->json(['response' => 'success', 'deleted' => $user]);
+        $token = JWTAuth::getToken();
+        try {
+            JWTAuth::invalidate($token);
+            $this->userservice->delete($user);
+            return response()->json(['response' => 'success', 'deleted' => $user]);
+        } catch (TokenExpiredException $e) {
+            throw new HttpResponseException(
+                Response::json(['msg' => "Your token Expired. Need to refresh Token or login again"])
+            );
+        }
     }
 }

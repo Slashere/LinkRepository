@@ -9,7 +9,7 @@
 namespace App\UseCases;
 
 use App\Entity\User;
-use App\Http\Requests\User\CreateUser;
+use App\Http\Requests\User\ApiCreateUser;
 use App\Http\Requests\User\EditUser;
 use Gate;
 use Response;
@@ -43,7 +43,7 @@ class UserService
        }
     }
 
-    public function create(CreateUser $request)
+    public function create(ApiCreateUser $request)
     {
         return User::register($request);
     }

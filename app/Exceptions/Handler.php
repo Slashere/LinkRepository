@@ -2,14 +2,18 @@
 
 namespace App\Exceptions;
 
+use App\Traits\RestExceptionHandlerTrait;
+use App\Traits\RestTrait;
 use Exception;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
-use Illuminate\Http\Response;
-use Illuminate\Auth\Access\AuthorizationException;
-use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
+
 
 class Handler extends ExceptionHandler
 {
+
+    use RestTrait;
+    use RestExceptionHandlerTrait;
+
     protected $dontReport = [
         //
     ];
@@ -24,29 +28,14 @@ class Handler extends ExceptionHandler
         parent::report($exception);
     }
 
-    public function render($request, Exception $exception)
+    public function render($request, Exception $e)
     {
-        if ($exception instanceof AuthorizationException)
-        {
-            return response()->json([
-                'code' => 403,
-                'message' => 'This action is unauthorized.',
-            ],403);
+        if(!$this->isApiCall($request)) {
+            $retval = parent::render($request, $e);
+        } else {
+            $retval = $this->getJsonResponseForException($request, $e);
         }
 
-        if ($exception instanceof  UnauthorizedHttpException)
-        {
-            return response()->json([
-                'code' => 401,
-                'message' => 'Your token is expired or didn\'t generated. Please log in',
-            ],401);
-        }
-        if ($exception instanceof \DomainException && $request->expectsJson()) {
-            return response()->json([
-                'message' => $exception->getMessage(),
-            ], Response::HTTP_BAD_REQUEST);
-        }
-
-        return parent::render($request, $exception);
+        return $retval;
     }
 }

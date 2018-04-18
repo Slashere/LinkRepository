@@ -8,7 +8,7 @@ Route::middleware('checkstatus')->group(function () {
 
     Route::get('/user/verify/{token}', 'Auth\RegisterController@verifyUser')->name('user.verify');
 
-    Route::get('/', 'MainController@index')->name('main');
+    Route::get('/', 'LinkController@showLinks')->name('main');
 
     Route::get('/gallery', 'LinkController@gallery')->name('gallery');
 

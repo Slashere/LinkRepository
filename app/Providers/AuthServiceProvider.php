@@ -27,6 +27,7 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->registerPolicies();
         $this->registerPostPolicies();
+        $this->registerApiPostPolicies();
     }
 
     public function registerPostPolicies()
@@ -63,5 +64,32 @@ class AuthServiceProvider extends ServiceProvider
             return $user->hasAccess(['list-private-links']);
         });
 
+    }
+
+    public function registerApiPostPolicies()
+    {
+        Gate::define('api-create-link', function (User $user) {
+            return $user->hasAccess(['create-link']);
+        });
+
+        Gate::define('api-update-link', function (User $user, Link $link) {
+            return $user->id == $link->user_id;
+        });
+
+        Gate::define('api-delete-link', function (User $user, Link $link) {
+            return $user->id == $link->user_id;
+        });
+
+        Gate::define('api-show-private-link', function (User $user, Link $link) {
+            return $user->id == $link->user_id;
+        });
+
+        Gate::define('api-update-user', function (User $user, User $user2) {
+            return $user->id == $user2->id;
+        });
+
+        Gate::define('api-delete-user', function (User $user, User $user2) {
+            return $user->id == $user2->id;
+        });
     }
 }

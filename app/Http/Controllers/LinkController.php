@@ -45,8 +45,19 @@ class LinkController extends Controller
 
     public function index()
     {
-        $links = Link::where('user_id', '=', Auth::user()->id)->paginate(3);
+        $links = $this->linkservice->getMyLinks();
         return view('links.index', compact('links'));
+    }
+
+    public function showLinks(Request $request)
+    {
+        $links = $this->linkservice->getAllLinks();
+
+        if ($request->ajax()) {
+            return view('prewelcome', ['links' => $links])->render();
+        }
+
+        return view('welcome', compact(['links']));
     }
 
     public function create()
