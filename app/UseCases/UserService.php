@@ -45,7 +45,7 @@ class UserService
 
     public function create(ApiCreateUser $request)
     {
-        return User::register($request);
+        return User::ApiRegister($request);
     }
 
     public function delete(User $user)
