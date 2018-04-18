@@ -64,7 +64,7 @@ class LinkService
         $data = $request->all();
         $path = public_path() . '/images/';
         if ($request->has('image')) {
-            if (File::exists($path . $link->image)) { // unlink or remove previous image from folder
+            if ($link->image != NULL && File::exists($path . $link->image)) { // unlink or remove previous image from folder
                 unlink($path . $link->image);
             }
             $explode = explode(',', $request['image']);

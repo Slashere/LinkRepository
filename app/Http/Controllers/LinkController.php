@@ -71,9 +71,8 @@ class LinkController extends Controller
         if( $request->hasFile('image')) {
             $image = $request->file('image');
             $path = public_path(). '/images/';
-            $filename = time() . '.' . $image->getClientOriginalExtension();
-            $image->move($path, $filename);
-            $data['image'] = $path;
+            $data['image'] = '(' . uniqid() . ')' . $image->getClientOriginalName();
+            $image->move($path, $data['image']);
         }
         $data['user_id'] = auth()->user()->id;
         Link::create($data);
@@ -97,7 +96,7 @@ class LinkController extends Controller
         $data = $request->all();
         $path = public_path() . '/images/';
         if ($request->hasFile('image')) {
-            if (File::exists($path . $link->image)) { // unlink or remove previous image from folder
+            if ($link->image != NULL && File::exists($path . $link->image)) { // unlink or remove previous image from folder
                 unlink($path . $link->image);
             }
             $image = $request->file('image');
