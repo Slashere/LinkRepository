@@ -1,10 +1,11 @@
 <?php
 
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateVerifyUsersTable extends Migration
+class CreateTokensTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +14,12 @@ class CreateVerifyUsersTable extends Migration
      */
     public function up()
     {
-        Schema::create('verify_users', function (Blueprint $table) {
+        Schema::create('tokens', function (Blueprint $table) {
             $table->increments('user_id');
-            $table->string('token');
-            $table->timestamp('expired_date');
+            $table->string('access_token');
+            $table->timestamp('access_token_expired_date')->nullable();
+            $table->string('refresh_token');
+            $table->timestamp('refresh_token_expired_date')->nullable();
         });
     }
 
@@ -27,6 +30,6 @@ class CreateVerifyUsersTable extends Migration
      */
     public function down()
     {
-        Schema::drop('verify_users');
+        Schema::drop('tokens');
     }
 }

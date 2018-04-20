@@ -46,6 +46,10 @@ class User extends Authenticatable implements JWTSubject
     {
         return $this->hasOne(VerifyUser::class);
     }
+    public function token()
+    {
+        return $this->hasOne(Token::class);
+    }
 
     public function hasAccess(array $permissions)
     {
@@ -93,6 +97,17 @@ class User extends Authenticatable implements JWTSubject
             'email' => $request['email'],
             'password' => bcrypt($request['password']),
         ]);
+    }
+
+
+    public static function validate($credentials)
+    {
+        $auntefication = Auth::validate($credentials);
+        if ($auntefication === true) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public function updateUserBasicValues(User $user, EditUser $request)
