@@ -6,11 +6,13 @@ namespace App\Http\Controllers\Api;
 use App\Http\Requests\Link\ApiCreateLink;
 use App\Http\Requests\Link\ApiEditLink;
 use App\Entity\Link;
+use App\Entity\User;
 use Gate;
 use App\UseCases\LinkService;
 use App\Http\Controllers\Controller;
 use Response;
 use Validator;
+use Auth;
 
 
 class LinkController extends Controller
@@ -30,6 +32,8 @@ class LinkController extends Controller
 
     public function showMyLinks()
     {
+        $user = Auth::user();
+        dd($user);
         $allMyLinks = $this->linkservice->getMyLinks();
         return response()->json(['response' => 'success', 'my links' => $allMyLinks]);
     }

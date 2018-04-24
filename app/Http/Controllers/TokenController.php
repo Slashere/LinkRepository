@@ -4,15 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Entity\Token;
 use App\Entity\User;
+use Illuminate\Auth\TokenGuard;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Config;
 use Response;
-use Tymon\JWTAuth\Exceptions\TokenBlacklistedException;
 use Tymon\JWTAuth\Exceptions\TokenExpiredException;
 use Validator;
 use JWTAuth;
-use Auth;
+use Illuminate\Support\Facades\Auth;
 
 
 class TokenController extends Controller
@@ -37,9 +36,9 @@ class TokenController extends Controller
         if (Auth::once($credentials)) {
             $user = Auth::getUser();
             if ($user->token == false) {
-                Token::createTokens($user);
+                Token::createTokens($user->id);
             } else {
-                Token::updateTokens($user);
+                Token::updateTokens($user->id);
             }
             $accessToken = Token::where('user_id', $user->id)->pluck('access_token');
             $refreshToken = Token::where('user_id', $user->id)->pluck('refresh_token');
@@ -51,30 +50,30 @@ class TokenController extends Controller
 
     public function refresh(Request $request)
     {
+        dd(Auth::user()->token['access_token']);
+
         $refreshToken = $request->bearerToken();
 
+        $token = Token::where('refresh_token', $refreshToken)->first();
         if (Token::checkRefreshToken($refreshToken)) {
-            Token::updateTokens($user);
-            $accessToken = Token::where('refresh_token', $refreshToken)->pluck('access_token');
-            $refreshToken = Token::where('refresh_token', $refreshToken)->pluck('refresh_token');
+            Token::updateTokens($token->user_id);
+            $accessToken = Token::where('user_id', $token->user_id)->pluck('access_token');
+            $refreshToken = Token::where('user_id', $token->user_id)->pluck('refresh_token');
             return response()->json(['access_token' => $accessToken, 'refresh_token' => $refreshToken]);
-
         } else {
-            return response()->json(['message' => 'Invalid token']);
+            return response()->json(['message' => 'Invalid refresh token']);
         }
     }
 
     public function invalidate(Request $request)
     {
-        $token = $request->bearerToken();
 
-        try {
-            $token = JWTAuth::invalidate($token);
+        $acceessToken = $request->bearerToken();
+
+        if(Token::where('access_token', $acceessToken)->delete()){
             return response()->json(['response' => 'success', 'msg' => 'Your token deleted']);
-        } catch (TokenExpiredException $e) {
-            throw new HttpResponseException(
-                Response::json(['msg' => "Your token Expired. Need to refresh Token or login again"])
-            );
+        } else return response()->json(['msg' => "Your token Expired. Need to refresh Token or login again"]);
+
         }
-    }
+
 }

@@ -4,8 +4,12 @@ namespace App\Providers;
 
 use App\Entity\Link;
 use App\Entity\User;
+use App\Extensions\AccessTokenGuard;
+use App\Extensions\TokenToUserProvider;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
+use Illuminate\Support\Facades\Auth;
+
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -28,6 +32,13 @@ class AuthServiceProvider extends ServiceProvider
         $this->registerPolicies();
         $this->registerPostPolicies();
         $this->registerApiPostPolicies();
+
+        Auth::extend('access_token', function ($app, $name, array $config) {
+            // automatically build the DI, put it as reference
+            $userProvider = app(TokenToUserProvider::class);
+            $request = app('request');
+            return new AccessTokenGuard($userProvider, $request, $config);
+        });
     }
 
     public function registerPostPolicies()

@@ -9,7 +9,7 @@ Route::put('/token', 'TokenController@refresh');
 
 Route::delete('/token', 'TokenController@invalidate');
 
-Route::middleware('auth.jwt')->group(function () {
+Route::middleware('auth:token', 'exper')->group(function () {
 
     Route::get('/link/{link}', 'Api\LinkController@show')
         ->name('api_show_link');

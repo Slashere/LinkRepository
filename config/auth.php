@@ -41,9 +41,15 @@ return [
             'provider' => 'users',
         ],
 
-        'api' => [
-            'driver' => 'jwt-auth',
-            'provider' => 'users',
+//        'api' => [
+//            'driver' => 'token',
+//            'provider' => 'apps',
+//        ],
+        'token' => [
+            // access_token is what we defined inside Auth::extend
+            // you can name this anything BUT should match with
+            // Auth::extend('HERE');
+            'driver' => 'access_token',
         ],
     ],
 
@@ -70,10 +76,16 @@ return [
             'model' => App\Entity\User::class,
         ],
 
-        // 'users' => [
-        //     'driver' => 'database',
-        //     'table' => 'users',
-        // ],
+        'apps' => [
+            'driver' => 'eloquent',
+            'model' => App\Entity\Token::class,
+        ],
+
+
+//         'users' => [
+//             'driver' => 'database',
+//             'table' => 'users',
+//         ],
     ],
 
     /*

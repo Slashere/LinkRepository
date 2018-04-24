@@ -12,6 +12,7 @@ use App\Http\Controllers\Controller;
 use Validator;
 use JWTAuth;
 use Response;
+use Auth;
 
 class UserController extends Controller
 {
