@@ -32,8 +32,6 @@ class LinkController extends Controller
 
     public function showMyLinks()
     {
-        $user = Auth::user();
-        dd($user);
         $allMyLinks = $this->linkservice->getMyLinks();
         return response()->json(['response' => 'success', 'my links' => $allMyLinks]);
     }

@@ -51,7 +51,6 @@ class TokenController extends Controller
     public function refresh(Request $request)
     {
         $refreshToken = $request->bearerToken();
-
         $token = Token::where('refresh_token', $refreshToken)->first();
         if (Token::checkRefreshToken($refreshToken)) {
             Token::updateTokens($token->user_id);
@@ -63,12 +62,10 @@ class TokenController extends Controller
         }
     }
 
-    public function invalidate(Request $request)
+    public static function invalidate(Request $request)
     {
-
-
         $acceessToken = $request->bearerToken();
-        if(Token::where('access_token', $acceessToken)->where('access_token_expired_date', '<=' , date("Y-m-d H:i:s"))->delete()){
+        if(Token::where('access_token', $acceessToken)->where('access_token_expired_date', '>' , date("Y-m-d H:i:s"))->delete()){
             return response()->json(['response' => 'success', 'msg' => 'Your token deleted']);
         } else return response()->json(['msg' => "Your token Expired. Need to refresh Token or login again"]);
 

@@ -17,7 +17,7 @@ class CheckApiTokenDate
     public function handle($request, Closure $next)
     {
         $response = $next($request);
-        if (Auth::check() && strtotime(Auth::user()->token['access_token_expired_date']) <= time()) {
+        if (Auth::check() && (strtotime(Auth::user()->token['access_token_expired_date']) < time())) {
             return response()->json(['code' => 401, 'message' => 'access_token is expired'], 401);
         }
         return $response;

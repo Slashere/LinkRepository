@@ -50,6 +50,7 @@ return [
             // you can name this anything BUT should match with
             // Auth::extend('HERE');
             'driver' => 'access_token',
+            'provider' => 'users',
         ],
     ],
 

@@ -11,17 +11,17 @@ class AccessTokenGuard implements Guard
 {
     use GuardHelpers;
 
-    private $inputKey = '';
-    private $storageKey = '';
+    private $inputKey = 'access_token';
+    private $storageKey = 'access_token';
     private $request;
 
     public function __construct (UserProvider $provider, Request $request, $configuration) {
         $this->provider = $provider;
         $this->request = $request;
         // key to check in request
-        $this->inputKey = isset($configuration['input_key']) ? $configuration['input_key'] : 'access_token';
+        $this->inputKey =  'access_token';
         // key to check in database
-        $this->storageKey = isset($configuration['storage_key']) ? $configuration['storage_key'] : 'access_token';
+        $this->storageKey = 'access_token';
     }
 
 
@@ -33,9 +33,7 @@ class AccessTokenGuard implements Guard
         // retrieve via token
         $token = $this->getTokenForRequest();
         if (! empty($token)) {
-            $user = $this->provider->retrieveByCredentials(
-                [$this->storageKey => $token]
-            );
+            $user = $this->provider->retrieveByToken($this->storageKey, $token);
         }
         return $this->user = $user;
     }
