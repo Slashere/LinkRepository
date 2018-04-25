@@ -41,8 +41,11 @@ class TokenController extends Controller
                 Token::updateTokens($user->id);
             }
             $accessToken = Token::where('user_id', $user->id)->pluck('access_token');
+            $accessTokenRefresh = Token::where('user_id', $user->id)->pluck('access_token_expired_date');
             $refreshToken = Token::where('user_id', $user->id)->pluck('refresh_token');
-            return response()->json(['access_token' => $accessToken, 'refresh_token' => $refreshToken]);
+            $refreshTokenRefresh = Token::where('user_id', $user->id)->pluck('refresh_token_expired_date');
+
+            return response()->json(['Access token' => $accessToken, 'Access token expiration date' => $accessTokenRefresh, 'Refresh token' => $refreshToken, 'Refresh token expiration date' => $refreshTokenRefresh ]);
         } else {
             return response()->json(['code' => 401, 'message' => 'These credentials do not match our records.'], 401);
         }
